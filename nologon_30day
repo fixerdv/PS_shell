@@ -1,0 +1,4 @@
+Remove-Item '.\nologin_user_30_days.csv' 
+$LastLogonDate= [DateTime]::Today.AddDays(-30)
+$Users = Get-ADUser -SearchBase 'OU=******,DC=****,DC=-*****' -filter {Enabled -eq $True -and LastLogonTimeStamp -lt $LastLogonDate} -Properties name,LastLogonTimestamp
+$Users | select name,@{N="LastLogonTimestamp";E={[datetime]::FromFileTime($_.LastLogonTimestamp).ToString('yyyy/MM/dd')}} | Export-csv -path '.\nologin_user_30_days.csv' -Delimiter ';' -Append -Encoding UTF8 
